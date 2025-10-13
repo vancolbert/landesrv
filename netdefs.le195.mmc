@@ -1,0 +1,1473 @@
+game LE-1.9.5
+protocol 25.35
+encoding latin1_fcolor
+- packet_structure
+B packet
+H payload_size_plus_one
+s payload
+- client_packet
+0 cp_input RAW_TEXT
+ s text
+1 cp_walk MOVE_TO
+ h x
+ h y
+2 cp_message SEND_PM
+ z name_msg
+5 cp_look_ent GET_PLAYER_INFO
+ i ent
+6 cp_run RUN_TO
+ h x
+ h y
+7 cp_sit SIT_DOWN
+ B is_sitting
+8 cp_need_ents SEND_ME_MY_ACTORS
+9 cp_hello SEND_OPENING_SCREEN
+10 cp_version SEND_VERSION
+ H protocol_major
+ H protocol_minor
+ B client_major
+ B client_minor
+ B client_release
+ B client_patch
+ s ipv4_port 6
+11 cp_turn_left TURN_LEFT
+12 cp_turn_right TURN_RIGHT
+13 cp_ping PING
+ s echo_cdata
+14 cp_heartbeat HEART_BEAT
+15 cp_need_location LOCATE_ME
+16 cp_use_doodad USE_MAP_OBJECT
+ i doodad
+ i with_ipos
+17 cp_need_stats SEND_MY_STATS
+18 cp_need_items SEND_MY_INVENTORY
+19 cp_look_item LOOK_AT_INVENTORY_ITEM
+ B ipos
+20 cp_move_item MOVE_INVENTORY_ITEM
+ B src_ipos
+ B dst_ipos
+21 cp_harvest HARVEST
+ s doodad16_or_rock8
+22 cp_drop_item DROP_ITEM
+ B ipos
+ I quantity
+23 cp_take_loot PICK_UP_ITEM
+ B lpos
+ I quantity
+24 cp_look_loot LOOK_AT_GROUND_ITEM
+ B lpos
+25 cp_open_bag INSPECT_BAG
+ B bag
+26 cp_close_bag S_CLOSE_BAG
+27 cp_look_doodad LOOK_AT_MAP_OBJECT
+ i doodad
+28 cp_use_ent TOUCH_PLAYER
+ i ent
+29 cp_reply_dialog RESPOND_TO_NPC
+ H ent
+ I reply
+30 cp_mix MANUFACTURE_THIS
+ a ingredients B
+  B ipos
+  H quantity
+ B amount
+31 cp_use_item USE_INVENTORY_ITEM
+ B ipos
+32 cp_start_trade TRADE_WITH
+ i ent
+33 cp_accept_trade ACCEPT_TRADE
+ a trades 16
+  B trade_source
+34 cp_reject_trade REJECT_TRADE
+35 cp_end_trade EXIT_TRADE
+36 cp_set_trade PUT_OBJECT_ON_TRADE
+ B trade_source
+ H pos
+ I quantity
+37 cp_del_trade REMOVE_OBJECT_FROM_TRADE
+ B tpos
+ I quantity
+38 cp_look_trade LOOK_AT_TRADE_ITEM
+ B tpos
+ B is_theirs
+39 cp_cast CAST_SPELL
+ a sigils B
+  B sigil
+40 cp_attack ATTACK_SOMEONE
+ i ent
+41 cp_need_known GET_KNOWLEDGE_INFO
+ H known
+42 cp_combine_item ITEM_ON_ITEM
+ B src_ipos
+ B dst_ipos
+43 cp_need_book OUVRE_LIVRE
+ H book
+44 cp_open_store GET_STORAGE_CATEGORY
+ B category
+45 cp_put_store DEPOSITE_ITEM
+ B ipos
+ I quantity
+46 cp_take_store WITHDRAW_ITEM
+ H spos
+ I quantity
+47 cp_look_store LOOK_AT_STORAGE_ITEM
+ H spos
+48 cp_need_spell SPELL_NAME
+ B spell
+49 cp_emote_greet SALUT
+50 cp_popup_reply POPUP_REPLY
+ H popup
+ s popup_data
+51 cp_shoot_doodad FIRE_MISSILE_AT_OBJECT
+ i doodad
+52 cp_gpuinfo__or__close_book SEND_VIDEO_INFO
+ s gdata
+999052 cp_gpuinfo SEND_VIDEO_INFO
+ B gl_vendor
+ B gl_version
+ B max_texture_bit
+ B max_texture_units
+ H max_vertex_uniform_components
+ H max_fragment_uniform_components
+ s capabilities_bv 12
+999152 cp_close_book CLOSE_BOOK_FROM_CLIENT
+53 cp_seek_book CONTINUE_LIVRE
+ H book
+ H amount
+ B direction
+55 cp_store_items TOUT_DEPOT
+60 cp_pong PING_RESPONSE
+ s echo_sdata
+61 cp_channel SET_ACTIVE_CHANNEL
+ B channel
+62 cp_emote_dance DANSE
+63 cp_emote_jump SALTO
+64 cp_emote_scoff ROUE
+70 cp_emote DO_EMOTE
+ B emote
+140 cp_auth LOG_IN
+ z username_password
+141 cp_create CREATE_CHAR
+ z username_password
+ B skin
+ B hair
+ B shirt
+ B legs
+ B boots
+ B race
+ B head
+ B scale
+230 cp_need_date GET_DATE
+231 cp_need_time GET_TIME
+232 cp_need_srvinfo SERVER_STATS
+233 cp_ipaddr ORIGINAL_IP
+235 cp_need_date2 GET_DATE_2
+254 cp_proxy PROXY
+255 cp_quit BYE
+- server_packet
+0 sp_output RAW_TEXT
+ B channel
+ z text
+1 sp_set_ent ADD_NEW_ACTOR
+ h ent
+ H x11_buffs0_4
+ H y11_buffs5_9
+ H buffs10_25
+ h rotation
+ B model
+ B frame
+ h max_health
+ h health
+ B control
+ z name
+ s extra
+2 sp_move_ent ADD_ACTOR_COMMAND
+ h ent
+ b action
+3 sp_control YOU_ARE
+ h ent
+4 sp_clock SYNC_CLOCK
+ i clock_ms
+5 sp_minute NEW_MINUTE
+ h minute
+6 sp_del_ent REMOVE_ACTOR
+ h ent
+7 sp_map CHANGE_MAP
+ B season
+ z map_path
+8 sp_combat COMBAT_MODE
+9 sp_clear_ents KILL_ALL_ACTORS
+10 sp_teleporters GET_TELEPORTERS_LIST
+ a teleporters H
+  H x
+  H y
+  b _unused
+11 sp_pong PONG
+ s echo_cdata
+12 sp_show_beamin TELEPORT_IN
+ h x
+ h y
+13 sp_show_beamout TELEPORT_OUT
+ h x
+ h y
+14 sp_play_sound PLAY_SOUND
+ h sound
+ h x
+ h y
+15 sp_set_clime START_RAIN
+ B seconds
+ B intensity
+ B clime
+16 sp_del_clime STOP_RAIN
+ B seconds
+ B _unused
+ B clime
+17 sp_show_lightning THUNDER
+ B _unused
+18 sp_stats HERE_YOUR_STATS
+ h for_cur # 0
+ h for_base # 1
+ h agi_cur # 2
+ h agi_base # 3
+ h int_cur # 4
+ h int_base # 5
+ h vol_cur # 6
+ h vol_base # 7
+ h ins_cur # 8
+ h ins_base # 9
+ h aur_cur # 10
+ h aur_base # 11
+ h com_nexus_cur # 12
+ h com_nexus_base # 13
+ h nec_nexus_cur # 14
+ h nec_nexus_base # 15
+ h pot_nexus_cur # 16
+ h pot_nexus_base # 17
+ h rec_nexus_cur # 18
+ h rec_nexus_base # 19
+ h fab_nexus_cur # 20
+ h fab_nexus_base # 21
+ h art_nexus_cur # 22
+ h art_nexus_base # 23
+ h fab_level_cur # 24
+ h fab_level_base # 25
+ h rec_level_cur # 26
+ h rec_level_base # 27
+ h alc_level_cur # 28
+ h alc_level_base # 29
+ h tot_level_cur # 30
+ h tot_level_base # 31
+ h att_level_cur # 32
+ h att_level_base # 33
+ h def_level_cur # 34
+ h def_level_base # 35
+ h mag_level_cur # 36
+ h mag_level_base # 37
+ h pot_level_cur # 38
+ h pot_level_base # 39
+ h carry_cur # 40
+ h carry_base # 41
+ h hp_cur # 42
+ h hp_base # 43
+ h mp_cur # 44
+ h mp_base # 45
+ h food # 46
+ h research_completed # 47
+ h _unused_48 # 48
+ I fab_xp # 49
+ I fab_xp_next # 51
+ I rec_xp # 53
+ I rec_xp_next # 55
+ I alc_xp # 57
+ I alc_xp_next # 59
+ I tot_xp # 61
+ I tot_xp_next # 63
+ I att_xp # 65
+ I att_xp_next # 67
+ I def_xp # 69
+ I def_xp_next # 71
+ I mag_xp # 73
+ I mag_xp_next # 75
+ I pot_xp # 77
+ I pot_xp_next # 79
+ h researching # 81
+ h research_total # 82
+ h nec_level_cur # 83
+ h nec_level_base # 84
+ I nec_xp # 85
+ I nec_xp_next # 87
+ h art_level_cur # 89
+ h art_level_base # 90
+ I art_xp # 91
+ I art_xp_next # 93
+ h notoriety # 95
+ h religion # 96
+ h religion_rank # 97
+ h race # 98
+ h _unused_99 # 99
+ h _unused_100 # 100
+ h mag_nexus_cur # 101
+ h mag_nexus_base # 102
+ h alc_nexus_cur # 103
+ h alc_nexus_base # 104
+ h cour_base # 105
+ h cour_cur # 106
+ h vita_base # 107
+ h vita_cur # 108
+ h endu_base # 109
+ h endu_cur # 110
+ h char_base # 111
+ h char_cur # 112
+ h reac_base # 113
+ h reac_cur # 114
+ h perc_base # 115
+ h perc_cur # 116
+ h rati_base # 117
+ h rati_cur # 118
+ h dext_base # 119
+ h dext_cur # 120
+ h ethe_base # 121
+ h ethe_cur # 122
+ h ing_level_cur # 123
+ h ing_level_base # 124
+ I ing_xp # 125
+ I ing_xp_next # 127
+ h ing_nexus_cur # 129
+ h ing_nexus_base # 130
+ h _unused_131 # 131
+19 sp_items HERE_YOUR_INVENTORY
+ a items B
+  H image
+  I quantity
+  B ipos
+  B iflags
+  H item
+20 sp_output_item INVENTORY_ITEM_TEXT
+ z text
+21 sp_set_item GET_NEW_INVENTORY_ITEM
+ H image
+ I quantity
+ B ipos
+ B iflags
+ H item
+22 sp_del_item REMOVE_ITEM_FROM_INVENTORY
+ B ipos
+23 sp_loot HERE_YOUR_GROUND_ITEMS
+ a loot B
+  H image
+  I quantity
+  B lpos
+24 sp_set_loot GET_NEW_GROUND_ITEM
+ H image
+ I quantity
+ B lpos
+25 sp_del_loot REMOVE_ITEM_FROM_GROUND
+ B lpos
+26 sp_close_bag CLOSE_BAG
+27 sp_set_bag GET_NEW_BAG
+ H x
+ H y
+ B bag
+28 sp_bags GET_BAGS_LIST
+ a bags B
+  H x
+  H y
+  B bag
+29 sp_del_bag DESTROY_BAG
+ B bag
+30 sp_dialog NPC_TEXT
+ z text
+31 sp_replies NPC_OPTIONS_LIST
+ a replies
+  z text H
+  I reply
+  H ent
+32 sp_close_dialog CLOSE_NPC_MENU
+33 sp_show_dialog SEND_NPC_INFO
+ z name 20
+ B portrait
+34 sp_show_trade GET_TRADE_INFO
+35 sp_set_trade GET_TRADE_OBJECT
+ H image
+ I quantity
+ B trade_source
+ B tpos
+ B is_theirs
+ H item
+36 sp_accept_trade GET_TRADE_ACCEPT
+ B is_theirs
+37 sp_reject_trade GET_TRADE_REJECT
+ B is_theirs
+38 sp_close_trade GET_TRADE_EXIT
+39 sp_del_trade REMOVE_TRADE_OBJECT
+ I quantity
+ B tpos
+ B is_theirs
+40 sp_trade_items GET_YOUR_TRADEOBJECTS
+ a items B
+  H image
+  I quantity
+  B ipos
+  B iflags
+  H item
+41 sp_name_trade GET_TRADE_PARTNER_NAME
+ B has_store
+ z trader_name
+42 sp_sigils GET_YOUR_SIGILS
+ s sigils_bv
+43 sp_output_spell SPELL_ITEM_TEXT
+ z text
+44 sp_set_buff GET_ACTIVE_SPELL
+ B buff_pos
+ B buff
+ H seconds
+45 sp_buffs GET_ACTIVE_SPELL_LIST
+ a buffs 10
+  B buff
+  H seconds
+46 sp_del_buff REMOVE_ACTIVE_SPELL
+ B buff_pos
+47 sp_damage GET_ACTOR_DAMAGE
+ H ent
+ H health_change
+ H health_state
+48 sp_heal GET_ACTOR_HEAL
+ H ent
+ H health_change
+ H health_state
+49 sp_set_stat SEND_PARTIAL_STAT
+ B stat
+ i value
+50 sp_show_loot SPAWN_BAG_PARTICLES
+ H x
+ H y
+51 sp_set_ent_with_bling ADD_NEW_ENHANCED_ACTOR
+ h ent
+ H x11_buffs0_4
+ H y11_buffs5_9
+ H buffs10_25
+ h rotation
+ B model
+ B _unused
+ B skin
+ B hair
+ B shirt
+ B legs
+ B boots
+ B head
+ B shield
+ B weapon
+ B cape
+ B helmet
+ B frame
+ h max_health
+ h health
+ B control
+ z name
+ s extra
+52 sp_set_worn ACTOR_WEAR_ITEM
+ H ent
+ B worn
+ B gear
+53 sp_del_worn ACTOR_UNWEAR_ITEM
+ H ent
+ B worn
+54 sp_play_music PLAY_MUSIC
+ B music
+55 sp_known GET_KNOWLEDGE_LIST
+ s known_bv
+56 sp_set_known GET_NEW_KNOWLEDGE
+ H known
+ H _unused
+57 sp_output_known GET_KNOWLEDGE_TEXT
+ z text
+59 sp_buddy BUDDY_EVENT
+ B is_update
+ s status_or_name
+60 sp_ping PING_REQUEST
+ s echo_sdata
+61 sp_set_fire FIRE_PARTICLES
+ H x
+ H y
+ H fire
+62 sp_del_fire REMOVE_FIRE_AT
+ H x
+ H y
+63 sp_window DISPLAY_CLIENT_WINDOW
+ B window
+ s wdata
+64 sp_open_book OPEN_BOOK
+ H book
+65 sp_read_book READ_BOOK
+ B is_content
+ B book_format
+ H book
+ s book_data
+66 sp_close_book CLOSE_BOOK
+ H book
+67 sp_categories STORAGE_LIST
+ a categories
+  B category
+  z name
+68 sp_store STORAGE_ITEMS
+ B is_update
+ B category
+ a items
+  H image
+  i quantity
+  H spos
+  H item
+69 sp_output_store STORAGE_TEXT
+ z text
+70 sp_set_spell SPELL_CAST
+ B spell_result
+ B spell
+ s srdata # B spell_img | z spell_name
+71 sp_channels GET_ACTIVE_CHANNELS
+ B active
+ a channels
+  I channel
+72 sp_set_map MAP_FLAGS
+ I mapflags
+73 sp_set_health GET_ACTOR_HEALTH
+ H ent
+ H health
+ H health_state
+74 sp_doodads GET_3D_OBJ_LIST
+ a doodads B
+  H x
+  H y
+  f rx
+  f ry
+  f rz
+  H doodad
+75 sp_set_doodad GET_3D_OBJ
+ H x
+ H y
+ f rx
+ f ry
+ f rz
+ H doodad
+76 sp_del_doodad REMOVE_3D_OBJ
+ H doodad
+77 sp_cooldowns GET_ITEMS_COOLDOWN
+ a cooldowns
+  B ipos
+  H total_ms
+  H remaining_ms
+78 sp_set_buffs SEND_BUFFS
+ H ent
+ I buffs
+79 sp_show_effect SEND_SPECIAL_EFFECT
+ B effect
+ s effect_data
+80 sp_del_mine REMOVE_MINE
+ B mine
+81 sp_set_mine GET_NEW_MINE
+ H x
+ H y
+ B mine
+ B mine_type
+82 sp_mines GET_MINES_LIST
+ a mines
+  H x
+  H y
+  B mine
+  B mine_type
+83 sp_popup DISPLAY_POPUP
+ H popup
+ B _unused_flags
+ z ptitle B
+ H size
+ z text B
+ s popup_data
+84 sp_aim_ent MISSILE_AIM_A_AT_B
+ H src_ent
+ H dst_ent
+85 sp_aim_point MISSILE_AIM_A_AT_XYZ
+ H ent
+ f x
+ f y
+ f z
+86 sp_shoot_ent MISSILE_FIRE_A_TO_B
+ H src_ent
+ H dst_ent
+87 sp_shoot_point MISSILE_FIRE_A_TO_XYZ
+ H src_ent
+ f x
+ f y
+ f z
+88 sp_shoot_at MISSILE_FIRE_XYZ_TO_B
+ H dst_ent
+ f x
+ f y
+ f z
+89 sp_emote ADD_ACTOR_ANIMATION
+ H ent
+ H emote
+90 sp_set_mark SEND_MAP_MARKER
+ h mark
+ h x
+ h y
+ z mark_name
+ z text
+91 sp_del_mark REMOVE_MAP_MARKER
+ h mark
+92 sp_set_combat COMBAT_INFO
+ B combat
+ H dst_ent
+ H src_ent
+ i value
+93 sp_seek_book CHANGE_PAGE
+ H book
+ h amount
+ h is_forwards
+94 sp_set_rock GET_NEW_ROCHE
+ H x
+ H y
+ B rock
+95 sp_rocks GET_ROCHE_LIST
+ a rocks B
+  H x
+  H y
+  B rock
+96 sp_del_rock DESTROY_ROCHE
+ B rock
+97 sp_title_ent GET_ACTOR_TITRE
+ H ent
+ z title
+98 sp_achievements SEND_ACHIEVEMENTS
+ s achievements_bv
+99 sp_set_food MAX_NUTRI
+ H is_enlarged
+100 sp_clime SEND_WEATHER
+120 sp_show_image SEND_IMAGE
+ z image_path
+121 sp_date SEND_DATE
+ z text
+128 sp_allow DISPLAY_COORD
+ B allow_flags
+220 sp_show_doodad MAP_SET_OBJECTS
+ B is_3d
+ B is_visible
+ a doodads
+  I doodad
+221 sp_set_doodad MAP_STATE_OBJECTS
+ B is_3d
+ B doodad_state
+ a doodads
+  I doodad
+240 sp_show_upgrade UPGRADE_NEW_VERSION
+241 sp_error_version UPGRADE_TOO_OLD
+248 sp_error_colors REDEFINE_YOUR_COLORS
+249 sp_error_unregistered YOU_DONT_EXIST
+250 sp_auth LOG_IN_OK
+251 sp_error_auth LOG_IN_NOT_OK
+ z reason
+252 sp_create CREATE_CHAR_OK
+253 sp_error_create CREATE_CHAR_NOT_OK
+ z reason
+254 sp_proxy PROXY
+255 sp_quit BYE
+- model
+0 eldorian_female
+1 eldorian_male
+2 haut_elfe_female
+3 haut_elfe_male
+4 dwarf_female
+5 dwarf_male
+6 wraith
+7 cyclops
+8 beaver
+9 rat
+10 goblin_male_2
+11 goblin_female_1
+15 deer
+16 bear_1
+17 wolf
+18 white_rabbit
+19 brown_rabbit
+20 boar
+21 bear_2
+22 snake_1
+23 snake_2
+24 snake_3
+25 fox
+26 puma
+27 ogre_male_1
+28 goblin_male_1
+29 orc_male_1
+30 orc_female_1
+31 skeleton
+32 gargoyle_1
+33 gargoyle_2
+34 gargoyle_3
+35 troll
+36 chimeran_mountain_wolf
+37 gnome_female
+38 gnome_male
+39 orchan_female
+40 orchan_male
+41 draegoni_female
+42 draegoni_male
+43 skunk_1
+44 racoon_1
+45 unicorn_1
+46 chimeran_desert_wolf
+47 chimeran_forest_wolf
+48 bear_3
+49 bear_4
+50 panther
+51 feran
+52 leopard
+53 leopard_snow
+54 chimeran_arctic_wolf
+55 tiger
+56 tiger_white
+57 orc_female_1_armed
+58 orc_male_1_armed
+59 skeleton_armed
+60 phantom_warrior
+61 imp
+62 brownie
+63 leprechaun
+64 spider_small1
+65 spider_small2
+66 spider_small3
+67 spider_big1
+68 spider_big2
+69 spider_big3
+70 wood_sprite
+71 spider_big4
+72 spider_small4
+73 giant_1
+74 hobgoblin
+75 yeti
+76 snake_4
+77 feros
+78 dragon1
+79 penguin_gentoo
+80 penguin_king
+81 penguin_chinstrap
+82 bird_hawk
+83 bird_falcon
+84 lion
+85 dragon2
+86 cockatrice
+87 bird_phoenix
+88 chef_gobelin
+89 torcos
+90 captaine_pirate
+91 pirate1_h
+92 pirate1_f
+93 mousse
+94 pirate2_h
+95 pirate2_f
+96 chimere_maudite
+97 orc_male_maudit
+98 orc_female_maudit
+99 orc_male_maudit_armed
+100 cyclopsmh
+101 cyclopsms
+102 orc_female_brigand
+103 ogre_male_dominant
+104 goblinm_assassin
+105 skeleton_decompo
+106 skeleton_rouille
+107 horse1
+108 horse2
+109 spider_veuve_noire
+110 lycaon
+111 sinan_female
+112 sinan_male
+113 elfe_noir_female
+114 elfe_noir_male
+115 trollv
+116 chauve_souris
+117 mouette
+118 rudolph
+119 chiroptera
+120 chacal
+121 chasseresse
+122 troll_fantome
+123 gobelin_fantome
+124 pirate_fantome
+125 drapeau
+126 vengeance
+127 merfouettarde
+128 dame_blanche
+129 homme_blanc
+130 danseurs
+131 portefaix
+132 couturiere
+133 titan
+134 sorciere
+135 brigand_mage
+136 brigand_soldat
+137 brigand_chef
+138 clebard
+139 gardien
+140 hydre
+141 charmeuse
+142 gouatrin
+143 gobminier
+144 gobminieralbi
+145 scorpion
+146 pnj_sapeur
+147 pnj_poissf
+148 cerbere
+149 pnj_marin
+150 pnj_mendiant
+151 pnj_boulangere
+152 pnj_meunier
+153 nasparliu
+154 pnj_fontaine
+155 gouatrin_rebel
+156 chimeran_frimas
+157 bulangiu
+158 goblin_male_rek
+159 mannequin
+160 goblin_female_bleu
+161 goblin_male_2_bleu
+162 goblin_male_bleu
+163 goblinm_assassin_bleu
+164 chat
+165 horse3
+166 horse4
+167 horse5
+168 horse6
+169 horse7
+170 trollpierre
+171 troll2
+172 mysterios
+173 cyclopdonjon
+174 skeletondonjon
+175 skeleton_armeddonjon
+176 orc_male_1donjon
+177 ogredonjon
+178 gouatrindonjon
+179 orc_female_violet
+180 galdur_f_iri
+181 galdur_iri
+182 galdur2_f_iri
+183 galdur2_iri
+184 improuge
+185 impblanc
+186 impnoir
+187 impviolet
+188 golem
+189 leprechaunboss
+190 improuge2
+191 improuge3
+192 improuge4
+193 trollinfernal
+194 castellan
+195 nenorocit
+196 dragon2_blue
+197 dragon2_gray
+198 dragon2_pink
+199 giant_2
+200 golem_holistique
+201 golem_ophidien
+202 golem_auspicieux
+203 orc_male_violet
+204 corrompuf1
+205 corrompuh1
+206 corrompuf2
+207 corrompuh2
+208 tatoubleu
+209 castorbleu
+210 phenixbleu
+211 chauve_sourisbleu
+212 phenixvert
+213 phenixviolet
+214 dragonbleu
+215 saurien_creature
+216 cochon
+217 loupblanc
+218 isatis
+219 corbeau
+220 stratege
+221 sergent
+222 fantassin
+223 givrebete
+224 glacieron
+225 empereurgivre
+- skin
+0 SKIN_BROWN
+1 SKIN_NORMAL
+2 SKIN_PALE
+3 SKIN_TAN
+4 SKIN_DARK_BLUE
+5 SKIN_EN_CLAIR
+6 SKIN_EN_FONCE
+7 SKIN_EN_GRIS
+8 SKIN_EN_MEDIUM
+9 SKIN_MASQUE_PNJ
+- hair
+0 HAIR_BLACK
+1 HAIR_BLOND
+2 HAIR_BROWN
+3 HAIR_GRAY
+4 HAIR_RED
+5 HAIR_WHITE
+6 HAIR_BLUE
+7 HAIR_GREEN
+8 HAIR_PURPLE
+- eyes
+0 EYES_BROWN
+1 EYES_DARK_BROWN
+2 EYES_BROWN_RED
+3 EYES_LIGHT_BLUE
+4 EYES_BLUE
+5 EYES_DARK_BLUE
+6 EYES_LIGHT_GREEN
+7 EYES_GREEN
+8 EYES_DARK_GREEN
+9 EYES_LAVENDER
+10 EYES_VIOLET
+11 EYES_GOLD
+- head
+0 HEAD_1
+1 HEAD_2
+2 HEAD_3
+3 HEAD_4
+4 HEAD_5
+- scale
+0 SCALE_1
+1 SCALE_2
+2 SCALE_3
+3 SCALE_4
+4 SCALE_5
+5 SCALE_6
+6 SCALE_7
+7 SCALE_8
+8 SCALE_9
+9 SCALE_10
+10 SCALE_11
+- worn
+0 weapon KIND_OF_WEAPON
+1 shield KIND_OF_SHIELD
+2 cape KIND_OF_CAPE
+3 helmet KIND_OF_HELMET
+4 legs KIND_OF_LEG_ARMOR
+5 shirt KIND_OF_BODY_ARMOR
+6 boots KIND_OF_BOOT_ARMOR
+7 neck KIND_OF_MEDAILLON
+- cape
+30 cape_none
+- helmet
+20 helmet_none
+- neck
+0 neck_none
+- shield
+11 shield_none
+- frame
+0 frame_walk
+1 frame_run
+2 frame_die1
+3 frame_die2
+4 frame_pain1
+5 frame_pick
+6 frame_drop
+7 frame_idle
+8 frame_harvest
+9 frame_cast
+10 frame_ranged
+11 frame_pain2
+12 frame_sit
+13 frame_stand
+14 frame_sit_idle
+15 frame_combat_idle
+16 frame_in_combat
+17 frame_out_combat
+18 frame_attack_up_1
+19 frame_attack_up_2
+20 frame_attack_up_3
+21 frame_attack_up_4
+22 frame_attack_down_1
+23 frame_attack_down_2
+24 frame_attack_down_3
+25 frame_attack_down_4
+26 frame_attack_down_5
+27 frame_attack_down_6
+28 frame_attack_down_7
+29 frame_attack_down_8
+30 frame_attack_down_9
+31 frame_attack_down_10
+32 frame_attack_up_5
+33 frame_attack_up_6
+34 frame_attack_up_7
+35 frame_attack_up_8
+36 frame_attack_up_9
+37 frame_attack_up_10
+50 frame_salut
+- fcolor
+127 encoding_offset
+0 c_red1
+1 c_orange1
+2 c_yellow1
+3 c_green1
+4 c_blue1
+5 c_purple1
+6 c_grey1
+7 c_red2
+8 c_orange2
+9 c_yellow2
+10 c_green2
+11 c_blue2
+12 c_purple2
+13 c_grey2
+14 c_red3
+15 c_orange3
+16 c_yellow3
+17 c_green3
+18 c_blue3
+19 c_purple3
+20 c_grey3
+21 c_red4
+22 c_orange4
+23 c_yellow4
+24 c_green4
+25 c_blue4
+26 c_purple4
+27 c_grey4
+28 c_rose1
+- accent
+180 UUML
+181 EACUTE
+182 ACIRC
+183 AGRAVE
+184 CCEDIL
+185 ECIRC
+186 EUML
+187 EGRAVE
+188 IUML
+189 OCIRC
+190 UGRAVE
+191 aUMLAUT
+192 oUMLAUT
+193 uUMLAUT
+194 AUMLAUT
+195 OUMLAUT
+196 UUMLAUT
+197 DOUBLES
+198 aELIG
+199 oSLASH
+200 aRING
+201 AELIG
+202 OSLASH
+203 ARING
+204 EnyE
+205 ENYE
+206 aACCENT
+207 AACCENT
+208 EACCENT
+209 iACCENT
+210 IACCENT
+211 oACCENT
+212 OACCENT
+213 uACCENT
+214 UACCENT
+215 uCIRC
+216 iCIRC
+- window
+1 RULE_WIN
+2 RULE_INTERFACE
+3 NEW_CHAR_INTERFACE
+- action
+0 nothing
+1 kill_me
+3 die1
+4 die2
+5 pain1
+6 pick
+7 drop
+8 idle
+9 harvest
+10 cast
+11 ranged
+12 meele
+13 sit_down
+14 stand_up
+15 turn_left
+16 turn_right
+17 pain2
+18 enter_combat
+19 leave_combat
+20 move_n
+21 move_ne
+22 move_e
+23 move_se
+24 move_s
+25 move_sw
+26 move_w
+27 move_nw
+30 run_n
+31 run_ne
+32 run_e
+33 run_se
+34 run_s
+35 run_sw
+36 run_w
+37 run_nw
+38 turn_n
+39 turn_ne
+40 turn_e
+41 turn_se
+42 turn_s
+43 turn_sw
+44 turn_w
+45 turn_nw
+46 attack_up_1
+47 attack_up_2
+48 attack_up_3
+49 attack_up_4
+50 attack_down_1
+51 attack_down_2
+60 attack_down_3
+61 attack_down_4
+62 attack_down_5
+63 attack_down_6
+64 attack_down_7
+65 attack_down_8
+66 attack_down_9
+67 attack_down_10
+68 attack_up_5
+69 attack_up_6
+70 attack_up_7
+71 attack_up_8
+72 attack_up_9
+73 attack_up_10
+74 salut
+75 danse
+76 salto
+77 roue
+100 emote_cmd
+- clime
+1 weather_effect_rain
+2 weather_effect_snow
+3 weather_effect_hail
+4 weather_effect_sand
+5 weather_effect_dust
+6 weather_effect_lava
+20 weather_effect_wind
+21 weather_effect_leaves
+- combat
+0 COUP_CRITIQUE
+1 CHANCE_CRITIQUE
+2 CHANCE_ESQUIVE
+3 BOUCLIER_PERSEE
+4 DEFENSE_MALUS
+5 DEGAT_FROID
+6 DEGAT_CHAUD
+7 DEGAT_MAGIE
+8 DEGAT_LUMIERE
+9 DEGAT_POISON
+- stat
+0 PHY_CUR
+1 PHY_BASE
+2 COO_CUR
+3 COO_BASE
+4 REAS_CUR
+5 REAS_BASE
+6 WILL_CUR
+7 WILL_BASE
+8 INST_CUR
+9 INST_BASE
+10 VIT_CUR
+11 VIT_BASE
+12 HUMAN_CUR
+13 HUMAN_BASE
+14 ANIMAL_CUR
+15 ANIMAL_BASE
+16 VEGETAL_CUR
+17 VEGETAL_BASE
+18 INORG_CUR
+19 INORG_BASE
+20 ARTIF_CUR
+21 ARTIF_BASE
+22 MAGIC_CUR
+23 MAGIC_BASE
+24 MAN_S_CUR
+25 MAN_S_BASE
+26 HARV_S_CUR
+27 HARV_S_BASE
+28 ALCH_S_CUR
+29 ALCH_S_BASE
+30 OVRL_S_CUR
+31 OVRL_S_BASE
+32 DEF_S_CUR
+33 DEF_S_BASE
+34 ATT_S_CUR
+35 ATT_S_BASE
+36 MAG_S_CUR
+37 MAG_S_BASE
+38 POT_S_CUR
+39 POT_S_BASE
+40 CARRY_WGHT_CUR
+41 CARRY_WGHT_BASE
+42 MAT_POINT_CUR
+43 MAT_POINT_BASE
+44 ETH_POINT_CUR
+45 ETH_POINT_BASE
+46 FOOD_LEV
+47 RESEARCHING
+48 MAG_RES
+49 MAN_EXP
+50 MAN_EXP_NEXT
+51 HARV_EXP
+52 HARV_EXP_NEXT
+53 ALCH_EXP
+54 ALCH_EXP_NEXT
+55 OVRL_EXP
+56 OVRL_EXP_NEXT
+57 DEF_EXP
+58 DEF_EXP_NEXT
+59 ATT_EXP
+60 ATT_EXP_NEXT
+61 MAG_EXP
+62 MAG_EXP_NEXT
+63 POT_EXP
+64 POT_EXP_NEXT
+65 RESEARCH_COMPLETED
+66 RESEARCH_TOTAL
+67 SUM_EXP
+68 SUM_EXP_NEXT
+69 SUM_S_CUR
+70 SUM_S_BASE
+71 CRA_EXP
+72 CRA_EXP_NEXT
+73 CRA_S_CUR
+74 CRA_S_BASE
+75 NOTORIETE
+76 RELIGION
+77 RELIGION_LEV
+78 RACE
+79 ENG_EXP
+80 ENG_EXP_NEXT
+81 ENG_S_CUR
+82 ENG_S_BASE
+90 DEFENSE_N_CUR
+91 DEFENSE_N_BASE
+92 NECRO_N_CUR
+93 NECRO_N_BASE
+94 POTION_N_CUR
+95 POTION_N_BASE
+96 RECOLTE_N_CUR
+97 RECOLTE_N_BASE
+98 FABRICATION_N_CUR
+99 FABRICATION_N_BASE
+100 ARTISANAT_N_CUR
+101 ARTISANAT_N_BASE
+102 MAGIE_N_CUR
+103 MAGIE_N_BASE
+104 ALCHIMIE_N_CUR
+105 ALCHIMIE_N_BASE
+106 ENGINEER_N_CUR
+107 ENGINEER_N_BASE
+110 MIGHT_CUR
+111 MIGHT_BASE
+112 MATTER_CUR
+113 MATTER_BASE
+114 TOUGHNESS_CUR
+115 TOUGHNESS_BASE
+116 CHARM_CUR
+117 CHARM_BASE
+118 REACTION_CUR
+119 REACTION_BASE
+120 PERCEPTION_CUR
+121 PERCEPTION_BASE
+122 RATIONALITY_CUR
+123 RATIONALITY_BASE
+124 DEXTIRITY_CUR
+125 DEXTIRITY_BASE
+126 ETHEREALITY_CUR
+127 ETHEREALITY_BASE
+- race
+0 HUMAIN_ELDORIAN
+1 HAUT_ELFE
+2 ELFE_NOIR
+3 GALDUR
+4 HOMME_BLEU
+5 KULTAR
+6 NAIN
+7 HUMAIN_SINAN
+8 HUMAIN_INDEFINI
+- sound
+0 snd_rain
+1 snd_tele_in
+2 snd_tele_out
+3 snd_teleprtr
+4 snd_thndr_1
+5 snd_thndr_2
+6 snd_thndr_3
+7 snd_thndr_4
+8 snd_thndr_5
+9 snd_fire
+- channel
+0 CHAT_LOCAL
+1 CHAT_PERSONAL
+2 CHAT_GM
+3 CHAT_SERVER
+4 CHAT_MOD
+5 CHAT_MODPM
+6 CHAT_CHANNEL1
+7 CHAT_CHANNEL2
+8 CHAT_CHANNEL3
+9 CHAT_CHANNEL4
+10 CHAT_CHANNEL5
+11 CHAT_DEV
+12 CHAT_COORD
+13 CHAT_COMBAT
+255 CHAT_POPUP
+- effect
+0 SPECIAL_EFFECT_POISON
+1 SPECIAL_EFFECT_REMOTE_HEAL
+2 SPECIAL_EFFECT_HARM
+3 SPECIAL_EFFECT_SHIELD
+4 SPECIAL_EFFECT_RESTORATION
+5 SPECIAL_EFFECT_SMITE_SUMMONINGS
+6 SPECIAL_EFFECT_CLOAK
+7 SPECIAL_EFFECT_DECLOAK
+8 SPECIAL_EFFECT_INVASION_BEAMING
+9 SPECIAL_EFFECT_HEAL_SUMMONED
+10 SPECIAL_EFFECT_MANA_DRAIN
+11 SPECIAL_EFFECT_TELEPORT_TO_RANGE
+12 SPECIAL_EFFECT_HEAL
+13 SPECIAL_EFFECT_HARVEST_RARE_STONE
+14 SPECIAL_EFFECT_HARVEST_MN_EXP_BLESSING
+15 SPECIAL_EFFECT_HARVEST_MN_MONEY_BLESSING
+16 SPECIAL_EFFECT_HARVEST_WALL_COLLAPSE
+17 SPECIAL_EFFECT_HARVEST_BEES
+18 SPECIAL_EFFECT_HARVEST_RADON
+19 SPECIAL_EFFECT_HARVEST_TOOL_BREAKS
+20 SPECIAL_EFFECT_HARVEST_TELEPORT_NEXUS
+21 SPECIAL_EFFECT_HARVEST_MOTHER_NATURE_PISSED
+22 SPECIAL_EFFECT_MANUFACTURE_TOOL_BREAKS
+23 SPECIAL_EFFECT_MANUFACTURE_RARE_ITEM
+24 SPECIAL_EFFECT_MAKE_PLAYER_GLOW
+25 SPECIAL_EFFECT_SUMMON_RABBIT
+26 SPECIAL_EFFECT_SUMMON_RAT
+27 SPECIAL_EFFECT_SUMMON_BEAVER
+28 SPECIAL_EFFECT_SUMMON_SKUNK
+29 SPECIAL_EFFECT_SUMMON_RACOON
+30 SPECIAL_EFFECT_SUMMON_DEER
+31 SPECIAL_EFFECT_SUMMON_GREEN_SNAKE
+32 SPECIAL_EFFECT_SUMMON_RED_SNAKE
+33 SPECIAL_EFFECT_SUMMON_BROWN_SNAKE
+34 SPECIAL_EFFECT_SUMMON_FOX
+35 SPECIAL_EFFECT_SUMMON_BOAR
+36 SPECIAL_EFFECT_SUMMON_WOLF
+37 SPECIAL_EFFECT_SUMMON_SKELETON
+38 SPECIAL_EFFECT_SUMMON_SMAL_GARG
+39 SPECIAL_EFFECT_SUMMON_MEDIUM_GARG
+40 SPECIAL_EFFECT_SUMMON_BIG_GARG
+41 SPECIAL_EFFECT_SUMMON_PUMA
+42 SPECIAL_EFFECT_SUMMON_FEM_GOBLIN
+43 SPECIAL_EFFECT_SUMMON_POLAR_BEAR
+44 SPECIAL_EFFECT_SUMMON_BEAR
+45 SPECIAL_EFFECT_SUMMON_ARMED_MALE_GOB
+46 SPECIAL_EFFECT_SUMMON_ARMED_SKELETON
+47 SPECIAL_EFFECT_SUMMON_FEMALE_ORC
+48 SPECIAL_EFFECT_SUMMON_MALE_ORC
+49 SPECIAL_EFFECT_SUMMON_ARMED_FEM_ORC
+50 SPECIAL_EFFECT_SUMMON_ARMED_MALE_ORC
+51 SPECIAL_EFFECT_SUMMON_CYCLOP
+52 SPECIAL_EFFECT_SUMMON_FLUFFY_RABBIT
+53 SPECIAL_EFFECT_SUMMON_PHANTOM_WARRIOR
+54 SPECIAL_EFFECT_SUMMON_MOUNTAIN_CHIM
+55 SPECIAL_EFFECT_SUMMON_YETI
+56 SPECIAL_EFFECT_SUMMON_ARCTIC_CHIM
+57 SPECIAL_EFFECT_SUMMON_GIANT
+58 SPECIAL_EFFECT_SUMMON_GIANT_SNAKE
+59 SPECIAL_EFFECT_SUMMON_SPIDER
+60 SPECIAL_EFFECT_SUMMON_TIGER
+61 SPECIAL_EFFECT_SMALL_MINE_GOES_BOOM
+62 SPECIAL_EFFECT_MEDIUM_MINE_GOES_BOOM
+63 SPECIAL_EFFECT_HIGH_EXPLOSIVE_MINE_GOES_BOOM
+64 SPECIAL_EFFECT_SNARE_GOES_BOOM
+65 SPECIAL_EFFECT_CALTROP_GOES_BOOM
+66 SPECIAL_EFFECT_POISONED_CALTROP_GOES_BOOM
+67 SPECIAL_EFFECT_MANA_DRAINER_GOES_BOOM
+68 SPECIAL_EFFECT_MANA_BURNER_GOES_BOOM
+69 SPECIAL_EFFECT_UNINVIZIBILIZER_GOES_BOOM
+70 SPECIAL_EFFECT_MAGIC_IMMUNITY_REMOVAL_GOES_BOOM
+71 SPECIAL_EFFECT_HEAL_ALLIES
+72 SPECIAL_EFFECT_HEATSHIELD
+73 SPECIAL_EFFECT_COLDSHIELD
+74 SPECIAL_EFFECT_RADIATIONSHIELD
+75 SPECIAL_EFFECT_MAGIC_IMMUNITY
+76 SPECIAL_EFFECT_MAGIC_PROTECTION
+- mine_type
+0 MINE_TYPE_SMALL_MINE
+1 MINE_TYPE_MEDIUM_MINE
+2 MINE_TYPE_HIGH_EXPLOSIVE_MINE
+3 MINE_TYPE_TRAP
+4 MINE_TYPE_CALTROP
+5 MINE_TYPE_POISONED_CALTROP
+6 MINE_TYPE_BARRICADE
+7 MINE_TYPE_MANA_DRAINER
+8 MINE_TYPE_MANA_BURNER
+9 MINE_TYPE_UNINVIZIBILIZER
+10 MINE_TYPE_MAGIC_IMMUNITY_REMOVAL
+- health_state
+0 ETAT_SANTE_0
+1 ETAT_SANTE_0_5
+2 ETAT_SANTE_5_25
+3 ETAT_SANTE_25_50
+4 ETAT_SANTE_50_75
+5 ETAT_SANTE_75_100
+6 ETAT_SANTE_100
+7 PAS_ETAT_SANTE
+- buffs
+0 BUFF_NONE
+1 BUFF_INVISIBILITY
+2 BUFF_MAGIC_IMMUNITY
+4 BUFF_MAGIC_PROTECTION
+8 BUFF_COLD_SHIELD
+16 BUFF_HEAT_SHIELD
+32 BUFF_RADIATION_SHIELD
+64 BUFF_SHIELD
+128 BUFF_TRUE_SIGHT
+256 BUFF_ACCURACY
+512 BUFF_EVASION
+1024 BUFF_DOUBLE_SPEED
+- spell_result
+0 sr_none S_NONE
+1 sr_success S_SUCCES
+2 sr_fail S_FAILED
+3 sr_invalid S_INVALID
+4 sr_target S_SELECT_TARGET
+5 sr_location S_SELECT_TELE_LOCATION
+6 sr_nameinfo S_NAME
+- trade_source
+0 ts_none
+1 ts_item
+2 ts_store
+- season
+0 se_normal
+1 se_snow
+2 se_halloween
+- allow_flags
+0 af_none
+1 af_coordinates drapeau_coord
+2 af_encyclopedia drapeau_am
+- control
+0 cl_none
+1 cl_player HUMAN
+2 cl_script NPC
+3 cl_bot COMPUTER_CONTROLLED_HUMAN
+4 cl_mortal_player PKABLE_HUMAN
+5 cl_mortal_bot PKABLE_COMPUTER_CONTROLLED
+6 cl_world
+- iflags
+0 iflag_none
+1 iflag_mix ITEM_REAGENT
+2 iflag_resource ITEM_RESOURCE
+4 iflag_stack ITEM_STACKABLE
+8 iflag_combine ITEM_INVENTORY_USABLE
+16 iflag_tile ITEM_TILE_USABLE
+32 iflag_player ITEM_PLAYER_USABLE
+64 iflag_doodad ITEM_OBJECT_USABLE
+128 iflag_toggle ITEM_ON_OFF
