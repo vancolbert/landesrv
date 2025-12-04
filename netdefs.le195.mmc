@@ -646,6 +646,9 @@ s payload
  z text
 128 sp_allow DISPLAY_COORD
  B allow_flags
+150 sp_set_stat64 SEND_PARTIAL_STAT64
+ B stat
+ Q value
 220 sp_show_doodad MAP_SET_OBJECTS
  B is_3d
  B is_visible

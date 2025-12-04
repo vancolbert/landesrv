@@ -281,7 +281,7 @@ class Packet:
     __slots__ = 'ts ptype data name comment fields'.split()
     def __init__(p, i, d): p.ts, p.ptype, p.data, p.name, p.comment, p.fields = now(), i, d, 'unknown', '?', None
     __str__ = __repr__ = lambda p: f'Packet({p.ptype} {p.name} {p.comment} [{len(p.data)}])'
-podsts = {k:struct.Struct('<'+k) for k in 'bBhHiIf'}
+podsts = {k:struct.Struct('<'+k) for k in 'bBhHiIqQf'}
 class DecodeError(RuntimeError): pass
 class Decoder:
     __slots__ = 'b o'.split()
@@ -598,6 +598,11 @@ def ucmd_minute(u, a):
         g.world.minute = (m := arg_int(a[0]) % 360)
         psend('sp_minute', minute=m)
     tsend(f'minute = {g.world.minute}')
+def ucmd_stat(u, a):
+    'stat-id value'
+    if len(a) < 2: usage()
+    (n, i), v = ('', arg_int(s)) if (s := a[0]).isdigit() else match_sym('stat', s), arg_int(a[1])
+    psend('sp_set_stat' if v < 1<<31 else 'sp_set_stat64', stat=i, value=v)
 def cp_input(u, p):
     if not (a := (t := p.fields['text'].decode('latin1')).split()): return
     if (o := t[0] in '#&') or u.dev: return dispatch_ucmd(u, a[0][o:], a[1:])
