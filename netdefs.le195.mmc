@@ -180,7 +180,7 @@ s payload
  h health
  B control
  z name
- s extra
+ s extra # H scale
 2 sp_move_ent ADD_ACTOR_COMMAND
  h ent
  b action
@@ -464,7 +464,7 @@ s payload
  h health
  B control
  z name
- s extra
+ s extra # H scale
 52 sp_set_worn ACTOR_WEAR_ITEM
  H ent
  B worn
@@ -521,8 +521,7 @@ s payload
  z text
 70 sp_set_spell SPELL_CAST
  B spell_result
- B spell
- s srdata # B spell_img | z spell_name
+ s srdata # B spell; B spell_img | z spell_name
 71 sp_channels GET_ACTIVE_CHANNELS
  B active
  a channels
