@@ -600,7 +600,7 @@ def ucmd_minute(u, a):
     tsend(f'minute = {g.world.minute}')
 def ucmd_stat(u, a):
     'stat-id value'
-    if len(a) < 2: usage()
+    if len(a) < 2: return usage()
     (n, i), v = ('', arg_int(s)) if (s := a[0]).isdigit() else match_sym('stat', s), arg_int(a[1])
     psend('sp_set_stat' if v < 1<<31 else 'sp_set_stat64', stat=i, value=v)
 def cp_input(u, p):
