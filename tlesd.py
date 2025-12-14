@@ -86,10 +86,10 @@ def accept_rcon(l):
 def snipto(s, t): return None if (p := s.find(t)) < 0 else s[:p+1]
 def throw(e, *a): raise e(*a)
 class MatchError(ValueError): pass
-def match_prefix(d, s, p=None, what=None, fmt=lambda t:t[0]):
+def match_prefix(d, s, p=None, what=None, fmt=lambda t:t[0], throw_errors=1):
     if (v := d.get(n := p+s if p else s)): return s,v
-    if len(l := [(k[len(p):] if p else k, v) for k,v in d.items() if k.startswith(n)]) > 1: throw(MatchError, 'ambiguous: '+' '.join(fmt(t) for t in l))
-    return l[0] if l else throw(MatchError, f'no {what or "item"} starts with {s!r}')
+    if len(l := [(k[len(p):] if p else k, v) for k,v in d.items() if k.startswith(n)]) > 1: return throw(MatchError, 'ambiguous: '+' '.join(fmt(t) for t in l)) if throw_errors else None
+    return l[0] if l else throw(MatchError, f'no {what or "item"} starts with {s!r}') if throw_errors else None
 def read_rcon(c):
     if not (r := g.manhole.rcons.get(c)) or not read_cxn(c): return
     while d := snipto(c.rb, b'\n'):
@@ -461,6 +461,7 @@ listables = {
     'maps':lambda: [f'^b1{m.i:03d} ^y3{m.name}' for m in g.world.maps.values()],
     'items':lambda: [f'^b1{i.i:04d} ^y3{i.name}' for i in g.world.items.values()],
     'colors':lambda: [f'{i:02d} ^{chr(k[0])}{j}^^{chr(k[0])}{j} {n}' for k,v in fcmap.items() for j in range(1,5) if (i := g.proto.symtab.get(n := f'c_{v}{j}')) is not None],
+    'levels':lambda: [f'^b1{i:03d} ^y3{e:10d} ^g2+{e - levels[i-1] if i else 0}' for i,e in enumerate(levels)],
 }
 def ucmd_list(u, a):
     if not a: return usage()
@@ -598,11 +599,33 @@ def ucmd_minute(u, a):
         g.world.minute = (m := arg_int(a[0]) % 360)
         psend('sp_minute', minute=m)
     tsend(f'minute = {g.world.minute}')
+def psend_stat(i, v): psend('sp_set_stat' if v < 1<<31 else 'sp_set_stat64', stat=i, value=v)
 def ucmd_stat(u, a):
     'stat-id value'
     if len(a) < 2: return usage()
     (n, i), v = ('', arg_int(s)) if (s := a[0]).isdigit() else match_sym('stat', s), arg_int(a[1])
-    psend('sp_set_stat' if v < 1<<31 else 'sp_set_stat64', stat=i, value=v)
+    psend_stat(i, v)
+def gen_levels():
+    m = [v for s,e,v in ((0,20,1.2),(21,90,1.1),(91,98,1.6),(99,100,1.7)) for i in range(s,e+1)]
+    e = (t := [0,440,728] + [0]*98)[2]
+    for i in range(3,101): t[i] = (e := int(e + m[i]*(e - t[i - 2])))
+    return t
+levels = gen_levels()
+skills = {(a := w.split('='))[0]:a[1] for w in 'fab=man rec=harv alc=alch tot=ovrl def=def att=att mag=mag pot=pot nec=sum art=cra ing=eng'.split()}
+def ucmd_xp(u, a):
+    'skill xp|Ln'
+    if len(a) < 2: return usage()
+    if a[0].isdigit(): n = get_sym('stat', i := int(a[0]))
+    elif a[0][0].islower():
+        k = match_prefix(skills, w := a[0].replace('é','e'), what='skill')[1]
+        i = resolve_sym(n := f'{k}_exp'.upper())
+    else: n, i = match_sym(a[0], 'stat')
+    if not n.endswith('_EXP'): throw(ArgError, f'not a skill exp stat: {a[0]!r} = {i} {n}')
+    m = len(levels) - 1
+    v = levels[l := clamp(0, int(a[1][1:]), m)] if a[1][0] == 'L' else (v := int(a[1]), l := next((j for j,e in enumerate(levels[:-1]) if e <= v < levels[j+1]), m))[0]
+    psend_stat(i, v)
+    psend_stat(i + 1, levels[l+1] if l < m else levels[-1])
+    any(psend_stat(resolve_sym(n[:-4]+'_S_'+x), l) for x in ('CUR','BASE'))
 def cp_input(u, p):
     if not (a := (t := p.fields['text'].decode('latin1')).split()): return
     if (o := t[0] in '#&') or u.dev: return dispatch_ucmd(u, a[0][o:], a[1:])
