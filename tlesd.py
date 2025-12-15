@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import argparse, collections, gzip, logging, os, re, runpy, select, socket, struct, sys, time, traceback
 default_initmmc, default_netdefs = 'init.mmc', 'netdefs.le195.mmc'
-class G: __slots__ = 'opts net manhole proto world clock'.split()
+class G: __slots__ = 'opts net manhole proto world clock levels'.split()
 tcchars, now, pj, exists, basename, deque = 'rgybpcweRGYBPCWE', time.monotonic, os.path.join, os.path.exists, os.path.basename, collections.deque
 (tcmap := {'0':'\033[0m'}).update({c:f'\033[38;5;{i+1}m' for i,c in enumerate(tcchars)})
 tcpat, tcrfunc, tcnone = re.compile('`([0'+tcchars+'])'), lambda m: tcmap[m[1]], lambda m: ''
@@ -401,7 +401,7 @@ def make_stats_dict(u):
     for k in 'for agi int vol ins aur'.split(): seta(k, 6)
     for k in 'cour vita endu char reac perc rati dext ethe'.split(): seta(k, 8)
     for w in 'carry=200 hp=50 mp=40'.split(): seta((t := w.split('=', 1))[0], int(t[1]))
-    for k in 'fab rec alc tot att def mag pot nec art ing'.split(): d[k+'_xp_next'] = 1000
+    for k in 'fab rec alc tot att def mag pot nec art ing'.split(): d[k+'_xp_next'] = g.levels[1]
     return d
 def new_ent(i, **d):
     g.world.ents[i] = (e := Ent(i, **d))
@@ -461,7 +461,7 @@ listables = {
     'maps':lambda: [f'^b1{m.i:03d} ^y3{m.name}' for m in g.world.maps.values()],
     'items':lambda: [f'^b1{i.i:04d} ^y3{i.name}' for i in g.world.items.values()],
     'colors':lambda: [f'{i:02d} ^{chr(k[0])}{j}^^{chr(k[0])}{j} {n}' for k,v in fcmap.items() for j in range(1,5) if (i := g.proto.symtab.get(n := f'c_{v}{j}')) is not None],
-    'levels':lambda: [f'^b1{i:03d} ^y3{e:10d} ^g2+{e - levels[i-1] if i else 0}' for i,e in enumerate(levels)],
+    'levels':lambda: [f'^b1{i:03d} ^y3{e:10d} ^g2+{g.levels[i+1] - e if i < len(g.levels)-1 else 0}' for i,e in enumerate(g.levels)],
 }
 def ucmd_list(u, a):
     if not a: return usage()
@@ -605,12 +605,22 @@ def ucmd_stat(u, a):
     if len(a) < 2: return usage()
     (n, i), v = ('', arg_int(s)) if (s := a[0]).isdigit() else match_sym('stat', s), arg_int(a[1])
     psend_stat(i, v)
-def gen_levels():
-    m = [v for s,e,v in ((0,20,1.2),(21,90,1.1),(91,98,1.6),(99,100,1.7)) for i in range(s,e+1)]
-    e = (t := [0,440,728] + [0]*98)[2]
-    for i in range(3,101): t[i] = (e := int(e + m[i]*(e - t[i - 2])))
+def gen_levels(ver):
+    if ver == 1:
+        m = [v for s,e,v in ((0,10,1.4),(11,20,1.3),(21,30,1.2),(31,40,1.14),(41,90,1.07),(91,179,1.05)) for i in range(s,e+1)]
+        e, t = 100, [0]*180
+        for i in range(1,180): t[i] = (e := int(e * m[i]))
+    elif ver == 2:
+        m = [v for s,e,v in ((0,20,1.2),(21,90,1.1),(91,98,1.6),(99,100,1.7)) for i in range(s,e+1)]
+        e = (t := [0,440,728] + [0]*98)[2]
+        for i in range(3,101): t[i] = (e := int(e + m[i]*(e - t[i - 2])))
     return t
-levels = gen_levels()
+class Levels:
+    __slots__ = 'ver a'.split()
+    def __init__(l, v=2): l.ver, l.a = v, gen_levels(v)
+    __getitem__ = lambda l,i: l.a[i]
+    __len__ = lambda l: len(l.a)
+    __str__ = __repr__ = lambda l: f'Levels(ver={l.ver} [{len(l.a)}])'
 skills = {(a := w.split('='))[0]:a[1] for w in 'fab=man rec=harv alc=alch tot=ovrl def=def att=att mag=mag pot=pot nec=sum art=cra ing=eng'.split()}
 def ucmd_xp(u, a):
     'skill xp|Ln'
@@ -621,11 +631,17 @@ def ucmd_xp(u, a):
         i = resolve_sym(n := f'{k}_exp'.upper())
     else: n, i = match_sym(a[0], 'stat')
     if not n.endswith('_EXP'): throw(ArgError, f'not a skill exp stat: {a[0]!r} = {i} {n}')
-    m = len(levels) - 1
-    v = levels[l := clamp(0, int(a[1][1:]), m)] if a[1][0] == 'L' else (v := int(a[1]), l := next((j for j,e in enumerate(levels[:-1]) if e <= v < levels[j+1]), m))[0]
+    m = len(t := g.levels) - 1
+    v = t[l := clamp(0, int(a[1][1:]), m)] if a[1][0] == 'L' else (v := int(a[1]), l := next((j for j,e in enumerate(t[:-1]) if e <= v < t[j+1]), m))[0]
     psend_stat(i, v)
-    psend_stat(i + 1, levels[l+1] if l < m else levels[-1])
+    psend_stat(i + 1, t[l+1] if l < m else t[-1])
     any(psend_stat(resolve_sym(n[:-4]+'_S_'+x), l) for x in ('CUR','BASE'))
+def ucmd_levtab(u, a):
+    '1 | 2 - set xp level table version'
+    if a and (v := arg_int(a[0])) in (1,2):
+        g.levels = Levels(v)
+        psend('sp_stats', **make_stats_dict(u))
+    tsend(f'using xp level table version {g.levels.ver}')
 def cp_input(u, p):
     if not (a := (t := p.fields['text'].decode('latin1')).split()): return
     if (o := t[0] in '#&') or u.dev: return dispatch_ucmd(u, a[0][o:], a[1:])
@@ -684,7 +700,7 @@ def main():
     if l := (d := (parse_mmc(slurp(f)) if i is not None or exists(f) else {})).get('opts'): p.set_defaults(**{a.w[0]:(arg_bool(a.w[1]) if isinstance(getattr(o, a.w[0], None), bool) else ' '.join(a.w[1:])) for a in l})
     g.opts = (o := p.parse_args() if l else o)
     logging.getLogger().setLevel('DEBUG' if o.debug else 'INFO')
-    g.net, g.manhole, g.proto, g.world, g.clock = Net(), (m := Manhole()), Protocol().setup(), (w := World()), Clock()
+    g.net, g.manhole, g.proto, g.world, g.clock, g.levels = Net(), (m := Manhole()), Protocol().setup(), (w := World()), Clock(), Levels()
     if p := o.rcon: m.setup().listen(p, accept_rcon)
     w.setup().listen(o.world, accept_user)
     with User(0) as u: [dispatch_ucmd(u, a.w[0], a.w[1:]) for a in d.get('commands', {})]
